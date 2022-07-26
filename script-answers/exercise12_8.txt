@@ -1,0 +1,11 @@
+docker-compose -f docker-compose.dev.yml up
+docker exec -it todo-backend_mongo_1 bash
+mongo 
+use admin
+db.auth("root", "example")
+show dbs
+use the_database
+show collections
+db.todos.find({})
+db.todos.insertOne({text: "Increase the number of tools in my toolbelt", done: false})
+db.todos.find({})

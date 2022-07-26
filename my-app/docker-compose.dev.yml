@@ -1,0 +1,36 @@
+services:
+  my-app-front:
+    image: my-app-front
+    build:
+      context: ./frontend
+      dockerfile: dev.Dockerfile
+    volumes:
+      - ./frontend/:/usr/src/app
+    environment:
+      - REACT_APP_BACKEND_URL=http://localhost:3001/api/persons
+    ports:
+      - 3000:3000
+    container_name: my-app-front
+  my-app-back: # The name of the service, can be anything
+    image: my-app-back # Declares which image to use
+    build:
+      context: ./backend # Declares where to build if image is not found
+      dockerfile: dev.Dockerfile
+    ports: # Declares the ports to publish
+      - 3001:3001
+    volumes:
+      - ./backend/:/usr/src/app # The path can be relative, so ./ is enough to say "the same location as the docker-compose.yml"
+    environment:
+      MONGODB_URI: mongodb+srv://username:password123.@cluster0.5v2up.mongodb.net/?retryWrites=true&w=majority
+      PORT: 3001
+    container_name: my-app-back
+  nginx:
+    image: nginx:1.20.1
+    ports:
+      - 8080:80
+    volumes:
+      - ./nginx.dev.conf:/etc/nginx/nginx.conf:ro
+    container_name: reverse-proxy-dev
+    depends_on:
+      - my-app-front
+      - my-app-back
